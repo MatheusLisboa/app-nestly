@@ -1,0 +1,305 @@
+@import "tailwindcss";
+
+/*
+  MyNinho Design Language — Ninho
+  Warm nest · family-first · calm density
+  Soft sage + coral life — never cold SaaS purple
+*/
+
+:root {
+  /* Surfaces — soft mist green */
+  --background: #f3f6f4;
+  --foreground: #1a221e;
+  --surface: #f8faf8;
+  --surface-elevated: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #1a221e;
+  --popover: #ffffff;
+  --popover-foreground: #1a221e;
+
+  /* Brand — nest sage */
+  --primary: #2f6f5e;
+  --primary-foreground: #f4fbf7;
+  --primary-soft: color-mix(in oklab, var(--primary) 14%, transparent);
+
+  /* Supporting */
+  --secondary: #e6ece8;
+  --secondary-foreground: #24302a;
+  --muted: #eaf0ec;
+  --muted-foreground: #5c6b63;
+  /* Soft coral — family warmth */
+  --accent: #d4846a;
+  --accent-foreground: #fff8f5;
+  --accent-soft: color-mix(in oklab, var(--accent) 16%, transparent);
+
+  /* Feedback */
+  --destructive: #c94b4b;
+  --destructive-foreground: #fff8f7;
+  --success: #2f6f5e;
+  --success-foreground: #f4fbf7;
+  --warning: #c9893a;
+  --warning-foreground: #1a1408;
+  --info: #4a8f7a;
+  --info-foreground: #f4fbf7;
+
+  /* Lines & focus */
+  --border: #d5ddd8;
+  --border-subtle: #e4ebe6;
+  --input: #d5ddd8;
+  --ring: #2f6f5e;
+
+  /* Sidebar / chrome */
+  --sidebar: #eaf0ec;
+  --sidebar-foreground: #24302a;
+  --sidebar-border: #d8e0db;
+  --sidebar-accent: #dde6e1;
+  --sidebar-accent-foreground: #1a221e;
+
+  /* Typography scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Radius — softer, nest-like */
+  --radius-sm: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.375rem;
+  --radius-2xl: 1.75rem;
+
+  /* Elevation */
+  --shadow-xs: 0 1px 1px rgb(26 34 30 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(26 34 30 / 0.05), 0 2px 10px rgb(26 34 30 / 0.04);
+  --shadow-md: 0 2px 4px rgb(26 34 30 / 0.04), 0 14px 32px rgb(26 34 30 / 0.07);
+  --shadow-lg: 0 8px 16px rgb(26 34 30 / 0.06), 0 28px 52px rgb(26 34 30 / 0.09);
+  --shadow-glow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 16%, transparent),
+    0 10px 28px color-mix(in oklab, var(--accent) 10%, transparent);
+  --shadow-soft: var(--shadow-md);
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snappy: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-emphasize: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 160ms;
+  --duration-normal: 220ms;
+  --duration-slow: 320ms;
+
+  /* Overlay */
+  --overlay: rgb(26 34 30 / 0.38);
+}
+
+.dark {
+  --background: #0f1412;
+  --foreground: #eef3f0;
+  --surface: #151b18;
+  --surface-elevated: #1b221e;
+  --card: #171e1a;
+  --card-foreground: #eef3f0;
+  --popover: #1b221e;
+  --popover-foreground: #eef3f0;
+
+  --primary: #6fbaa3;
+  --primary-foreground: #0a1210;
+  --primary-soft: color-mix(in oklab, var(--primary) 18%, transparent);
+
+  --secondary: #222a26;
+  --secondary-foreground: #eef3f0;
+  --muted: #1c231f;
+  --muted-foreground: #9aaba2;
+  --accent: #e0a08c;
+  --accent-foreground: #1a100c;
+  --accent-soft: color-mix(in oklab, var(--accent) 18%, transparent);
+
+  --destructive: #f07167;
+  --destructive-foreground: #1a0908;
+  --success: #6fbaa3;
+  --success-foreground: #0a1210;
+  --warning: #e3a53a;
+  --warning-foreground: #1a1408;
+  --info: #6fbaa3;
+  --info-foreground: #0a1210;
+
+  --border: #2a332e;
+  --border-subtle: #222a26;
+  --input: #2a332e;
+  --ring: #6fbaa3;
+
+  --sidebar: #121815;
+  --sidebar-foreground: #eef3f0;
+  --sidebar-border: #24302a;
+  --sidebar-accent: #1c241f;
+  --sidebar-accent-foreground: #eef3f0;
+
+  --shadow-xs: 0 1px 1px rgb(0 0 0 / 0.35);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.28);
+  --shadow-md: 0 4px 8px rgb(0 0 0 / 0.35), 0 16px 36px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 12px 24px rgb(0 0 0 / 0.4), 0 32px 64px rgb(0 0 0 / 0.45);
+  --shadow-glow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 28%, transparent),
+    0 12px 32px color-mix(in oklab, var(--accent) 14%, transparent);
+  --shadow-soft: var(--shadow-md);
+
+  --overlay: rgb(0 0 0 / 0.55);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-overlay: var(--overlay);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+
+  --font-sans: var(--font-nunito);
+  --font-mono: var(--font-geist-mono);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-glow: var(--shadow-glow);
+  --shadow-soft: var(--shadow-soft);
+
+  --text-xs: var(--text-xs);
+  --text-sm: var(--text-sm);
+  --text-md: var(--text-md);
+  --text-base: var(--text-base);
+  --text-lg: var(--text-lg);
+  --text-xl: var(--text-xl);
+  --text-2xl: var(--text-2xl);
+  --text-3xl: var(--text-3xl);
+  --text-4xl: var(--text-4xl);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-size: var(--text-md);
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    background-image:
+      radial-gradient(
+        ellipse 90% 55% at 0% -10%,
+        color-mix(in oklab, var(--primary) 12%, transparent),
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 70% 45% at 100% 0%,
+        color-mix(in oklab, var(--accent) 12%, transparent),
+        transparent 50%
+      );
+    background-attachment: fixed;
+    min-height: 100dvh;
+    /* Avoid iOS bounce revealing white edges in standalone */
+    overscroll-behavior-y: none;
+  }
+
+  /* Touch-friendly defaults for interactive controls */
+  @media (pointer: coarse) {
+    button,
+    [role="button"],
+    a {
+      touch-action: manipulation;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 28%, transparent);
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px color-mix(in oklab, var(--ring) 70%, transparent);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .surface-glass {
+    background: color-mix(in oklab, var(--surface-elevated) 78%, transparent);
+    backdrop-filter: blur(16px) saturate(1.2);
+  }
+
+  .transition-soft {
+    transition:
+      color var(--duration-fast) var(--ease-soft),
+      background-color var(--duration-fast) var(--ease-soft),
+      border-color var(--duration-fast) var(--ease-soft),
+      box-shadow var(--duration-normal) var(--ease-soft),
+      transform var(--duration-normal) var(--ease-soft),
+      opacity var(--duration-fast) var(--ease-soft);
+  }
+}

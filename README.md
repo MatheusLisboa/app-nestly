@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyNinho
 
-## Getting Started
+House OS SaaS — modular monolith (Feature First).
 
-First, run the development server:
+## Stack
+
+- Next.js 15 (App Router) · React 19 · TypeScript
+- Tailwind CSS v4 · shadcn-style primitives · Motion · Lucide
+- TanStack Query · Zustand · React Hook Form · Zod
+- Supabase · PostgreSQL · Drizzle ORM
+- IndexedDB + Dexie (Offline First)
+- PWA (Serwist) · Vitest · Playwright · Biome
+
+## Multi-tenant
+
+The primary unit is a **Workspace** (UI may say "Família").  
+All shared data is scoped by `workspace_id` with Supabase RLS.
+
+## Getting started
 
 ```bash
+cp .env.example .env.local
+# fill Supabase + DATABASE_URL values
+
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Dev server (Turbopack) |
+| `npm run build` | Production build |
+| `npm run lint` | Biome check |
+| `npm run format` | Biome format |
+| `npm run typecheck` | TypeScript |
+| `npm run test` | Vitest |
+| `npm run test:e2e` | Playwright |
+| `npm run db:generate` | Drizzle generate |
+| `npm run db:migrate` | Drizzle migrate |
+| `npm run db:studio` | Drizzle Studio |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Architecture
 
-## Learn More
+```
+src/
+  app/                 # routes only (composition)
+  features/            # Feature First modules
+  db/                  # Drizzle schema + RLS SQL
+  lib/                 # infra (supabase, offline, actions)
+  config/              # brand, env, app constants
+  messages/            # i18n (pt-BR)
+  styles/              # design tokens
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Phase 1 + 2 — Auth, Workspace, Shopping, Inventory
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+See **[docs/SUPABASE_SETUP.md](./docs/SUPABASE_SETUP.md)** for the full checklist.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cp .env.example .env.local
+# fill Supabase credentials
+npm run db:push
+# then run SQL files in src/db/rls/ (001 → 004) in the Supabase SQL editor
+npm run dev
+```
 
-## Deploy on Vercel
+Without Supabase credentials, the shell still loads for local UI work; auth stays disabled.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Phase 0 delivers foundation. Phase 1 = Auth + Workspace. Phase 2 = Shopping + Inventory (offline adapters registered).

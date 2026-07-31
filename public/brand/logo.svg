@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none" role="img" aria-label="MyNinho">
+  <defs>
+    <linearGradient id="markBg" x1="6" y1="3" x2="42" y2="45" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3A8A74"/>
+      <stop offset="1" stop-color="#2F6F5E"/>
+    </linearGradient>
+    <linearGradient id="egg" x1="21" y1="16" x2="29" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F0D48A"/>
+      <stop offset="1" stop-color="#D4A84B"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="14" fill="url(#markBg)"/>
+  <circle cx="15" cy="13" r="10" fill="#FFFFFF" fill-opacity="0.08"/>
+  <path d="M10.5 31.5c3.4-8.2 8.6-13.1 13.5-14.6 4.9 1.5 10.1 6.4 13.5 14.6-4.9 3.4-8.6 4.9-13.5 4.9s-8.6-1.5-13.5-4.9Z" fill="#F4FBF7"/>
+  <ellipse cx="24" cy="22.2" rx="4.6" ry="5.5" fill="url(#egg)"/>
+  <ellipse cx="22.4" cy="20.2" rx="1.5" ry="2" fill="#FFFFFF" fill-opacity="0.35"/>
+  <circle cx="34.5" cy="13.5" r="1.6" fill="#D4846A"/>
+  <text x="60" y="31" fill="#1A221E" font-family="Nunito, ui-rounded, system-ui, sans-serif" font-size="24" font-weight="800" letter-spacing="-0.03em">MyNinho</text>
+</svg>
