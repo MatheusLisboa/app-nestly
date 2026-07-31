@@ -64,6 +64,7 @@ Then run RLS + seed SQL in the Supabase **SQL Editor**, in order:
 10. `src/db/rls/010_baby_rls.sql` (baby profile + care logs + RLS)
 11. `src/db/rls/011_baby_refine.sql` (gestação/nascido + enxoval/farmácia/quarto)
 12. `src/db/rls/012_baby_prep_items_category.sql` (categoria Itens + sugestões por tamanho)
+13. `src/db/rls/013_baby_medical.sql` (consultas/exames do bebê + vínculo com agenda)
 
 ### Option B — Generate migrations
 

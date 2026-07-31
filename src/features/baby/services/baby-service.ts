@@ -1,5 +1,6 @@
 import {
   type BabyCareType,
+  type BabyMedicalType,
   type BabyPrepCategory,
   type BabyStatus,
   DEFAULT_PREP_ITEMS,
@@ -50,6 +51,43 @@ export type BabyPrepProgress = Record<
   BabyPrepCategory,
   { total: number; done: number; items: BabyPrepItemView[] }
 >;
+
+export type BabyMedicalAppointmentView = {
+  id: string;
+  babyId: string;
+  type: BabyMedicalType;
+  title: string;
+  scheduledAt: string;
+  location: string | null;
+  professional: string | null;
+  notes: string | null;
+  calendarEventId: string | null;
+  isPast: boolean;
+};
+
+const MEDICAL_TYPE_LABEL: Record<BabyMedicalType, string> = {
+  consultation: "Consulta",
+  exam: "Exame",
+  ultrasound: "Ultrassom",
+  vaccine: "Vacina",
+  other: "Médico",
+};
+
+function calendarTitle(type: BabyMedicalType, title: string) {
+  return `${MEDICAL_TYPE_LABEL[type]}: ${title}`;
+}
+
+function calendarNotes(input: {
+  professional?: string | null;
+  notes?: string | null;
+  babyName?: string;
+}) {
+  const parts = ["Nestly · Bebê"];
+  if (input.babyName) parts.push(input.babyName);
+  if (input.professional) parts.push(`Profissional: ${input.professional}`);
+  if (input.notes) parts.push(input.notes);
+  return parts.join(" · ");
+}
 
 function startOfLocalDayIso(now = new Date()): string {
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -491,5 +529,169 @@ export async function deleteBabyPrepItem(itemId: string): Promise<void> {
 
   if (error) {
     throw new DomainError("BABY_PREP_DELETE_FAILED", error.message);
+  }
+}
+
+function mapMedicalAppointment(row: {
+  id: string;
+  baby_id: string;
+  type: string;
+  title: string;
+  scheduled_at: string;
+  location: string | null;
+  professional: string | null;
+  notes: string | null;
+  calendar_event_id: string | null;
+}): BabyMedicalAppointmentView {
+  const scheduledAt = row.scheduled_at;
+  return {
+    id: row.id,
+    babyId: row.baby_id,
+    type: row.type as BabyMedicalType,
+    title: row.title,
+    scheduledAt,
+    location: row.location,
+    professional: row.professional,
+    notes: row.notes,
+    calendarEventId: row.calendar_event_id,
+    isPast: new Date(scheduledAt).getTime() < Date.now(),
+  };
+}
+
+export async function listBabyMedicalAppointments(
+  babyId: string,
+): Promise<BabyMedicalAppointmentView[]> {
+  const { workspace, supabase } = await requireActiveWorkspaceContext("baby.read");
+
+  const { data, error } = await supabase
+    .from("baby_medical_appointments")
+    .select(
+      "id, baby_id, type, title, scheduled_at, location, professional, notes, calendar_event_id",
+    )
+    .eq("workspace_id", workspace.id)
+    .eq("baby_id", babyId)
+    .order("scheduled_at", { ascending: true });
+
+  if (error) {
+    throw new DomainError("BABY_MEDICAL_LIST_FAILED", error.message);
+  }
+
+  return (data ?? []).map(mapMedicalAppointment);
+}
+
+export async function addBabyMedicalAppointment(input: {
+  babyId: string;
+  type: BabyMedicalType;
+  title: string;
+  scheduledAt: string;
+  location?: string;
+  professional?: string;
+  notes?: string;
+}): Promise<BabyMedicalAppointmentView> {
+  const { user, workspace, supabase } = await requireActiveWorkspaceContext("baby.write");
+
+  const scheduledAt = new Date(input.scheduledAt).toISOString();
+  if (Number.isNaN(new Date(scheduledAt).getTime())) {
+    throw new DomainError("VALIDATION_ERROR", "Data/hora inválida.");
+  }
+
+  const { data: baby } = await supabase
+    .from("babies")
+    .select("name")
+    .eq("workspace_id", workspace.id)
+    .eq("id", input.babyId)
+    .maybeSingle();
+
+  const endsAt = new Date(new Date(scheduledAt).getTime() + 60 * 60 * 1000).toISOString();
+
+  const { data: event, error: eventError } = await supabase
+    .from("calendar_events")
+    .insert({
+      workspace_id: workspace.id,
+      title: calendarTitle(input.type, input.title),
+      starts_at: scheduledAt,
+      ends_at: endsAt,
+      all_day: false,
+      location: input.location || null,
+      notes: calendarNotes({
+        professional: input.professional,
+        notes: input.notes,
+        babyName: baby?.name,
+      }),
+      created_by: user.id,
+    })
+    .select("id")
+    .single();
+
+  if (eventError || !event) {
+    throw new DomainError(
+      "BABY_MEDICAL_CALENDAR_FAILED",
+      eventError?.message ?? "Falha ao criar na agenda.",
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("baby_medical_appointments")
+    .insert({
+      workspace_id: workspace.id,
+      baby_id: input.babyId,
+      type: input.type,
+      title: input.title,
+      scheduled_at: scheduledAt,
+      location: input.location || null,
+      professional: input.professional || null,
+      notes: input.notes || null,
+      calendar_event_id: event.id,
+      created_by: user.id,
+    })
+    .select(
+      "id, baby_id, type, title, scheduled_at, location, professional, notes, calendar_event_id",
+    )
+    .single();
+
+  if (error || !data) {
+    await supabase.from("calendar_events").delete().eq("id", event.id);
+    throw new DomainError(
+      "BABY_MEDICAL_CREATE_FAILED",
+      error?.message ?? "Falha ao criar consulta/exame.",
+    );
+  }
+
+  return mapMedicalAppointment(data);
+}
+
+export async function deleteBabyMedicalAppointment(appointmentId: string): Promise<void> {
+  const { workspace, supabase } = await requireActiveWorkspaceContext("baby.write");
+
+  const { data: existing, error: fetchError } = await supabase
+    .from("baby_medical_appointments")
+    .select("id, calendar_event_id")
+    .eq("workspace_id", workspace.id)
+    .eq("id", appointmentId)
+    .maybeSingle();
+
+  if (fetchError) {
+    throw new DomainError("BABY_MEDICAL_DELETE_FAILED", fetchError.message);
+  }
+  if (!existing) {
+    throw new DomainError("BABY_MEDICAL_DELETE_FAILED", "Registro não encontrado.");
+  }
+
+  const { error } = await supabase
+    .from("baby_medical_appointments")
+    .delete()
+    .eq("workspace_id", workspace.id)
+    .eq("id", appointmentId);
+
+  if (error) {
+    throw new DomainError("BABY_MEDICAL_DELETE_FAILED", error.message);
+  }
+
+  if (existing.calendar_event_id) {
+    await supabase
+      .from("calendar_events")
+      .delete()
+      .eq("workspace_id", workspace.id)
+      .eq("id", existing.calendar_event_id);
   }
 }

@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import {
   addBabyCareLogSchema,
+  addBabyMedicalAppointmentSchema,
   addBabyPrepItemSchema,
   applySuggestedPrepSchema,
   createBabySchema,
   deleteBabyCareLogSchema,
+  deleteBabyMedicalAppointmentSchema,
   deleteBabyPrepItemSchema,
   markBabyBornSchema,
   toggleBabyPrepItemSchema,
@@ -14,10 +16,12 @@ import {
 } from "@/features/baby/schemas/baby";
 import {
   addBabyCareLog,
+  addBabyMedicalAppointment,
   addBabyPrepItem,
   applySuggestedPrepItems,
   createBaby,
   deleteBabyCareLog,
+  deleteBabyMedicalAppointment,
   deleteBabyPrepItem,
   markBabyBorn,
   toggleBabyPrepItem,
@@ -27,6 +31,7 @@ import { createSafeAction } from "@/lib/actions/safe-action";
 
 function revalidateBaby() {
   revalidatePath("/baby");
+  revalidatePath("/calendar");
 }
 
 export const createBabyAction = createSafeAction({
@@ -112,5 +117,31 @@ export const applySuggestedPrepAction = createSafeAction({
     const result = await applySuggestedPrepItems(input);
     revalidateBaby();
     return result;
+  },
+});
+
+export const addBabyMedicalAppointmentAction = createSafeAction({
+  schema: addBabyMedicalAppointmentSchema,
+  async handler(input) {
+    const appointment = await addBabyMedicalAppointment({
+      babyId: input.babyId,
+      type: input.type,
+      title: input.title,
+      scheduledAt: input.scheduledAt,
+      location: input.location || undefined,
+      professional: input.professional || undefined,
+      notes: input.notes || undefined,
+    });
+    revalidateBaby();
+    return appointment;
+  },
+});
+
+export const deleteBabyMedicalAppointmentAction = createSafeAction({
+  schema: deleteBabyMedicalAppointmentSchema,
+  async handler(input) {
+    await deleteBabyMedicalAppointment(input.appointmentId);
+    revalidateBaby();
+    return { ok: true as const };
   },
 });

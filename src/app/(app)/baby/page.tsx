@@ -6,6 +6,7 @@ import {
   getBabyCareSummary,
   listBabies,
   listBabyCareLogs,
+  listBabyMedicalAppointments,
   listBabyPrepItems,
 } from "@/features/baby/services/baby-service";
 import { EmptyState } from "@/features/shared";
@@ -34,8 +35,18 @@ export default async function BabyPage() {
     const logs = baby && baby.status === "born" ? await listBabyCareLogs(baby.id) : [];
     const summary = baby && baby.status === "born" ? await getBabyCareSummary(baby.id) : null;
     const prep = baby ? await listBabyPrepItems(baby.id) : null;
+    const appointments = baby ? await listBabyMedicalAppointments(baby.id) : [];
 
-    return <BabyPanel baby={baby} logs={logs} summary={summary} prep={prep} canWrite={canWrite} />;
+    return (
+      <BabyPanel
+        baby={baby}
+        logs={logs}
+        summary={summary}
+        prep={prep}
+        appointments={appointments}
+        canWrite={canWrite}
+      />
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : t("loadError");
     return <EmptyState title={t("title")} description={message} />;

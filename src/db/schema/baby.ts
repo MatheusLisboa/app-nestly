@@ -12,17 +12,19 @@ import {
 import { profiles, workspaces } from "./workspace";
 
 export const babyStatusEnum = pgEnum("baby_status", ["expected", "born"]);
-export const babyCareTypeEnum = pgEnum("baby_care_type", [
-  "feeding",
-  "diaper",
-  "sleep",
-  "note",
-]);
+export const babyCareTypeEnum = pgEnum("baby_care_type", ["feeding", "diaper", "sleep", "note"]);
 export const babyPrepCategoryEnum = pgEnum("baby_prep_category", [
   "enxoval",
   "pharmacy",
   "nursery",
   "items",
+]);
+export const babyMedicalTypeEnum = pgEnum("baby_medical_type", [
+  "consultation",
+  "exam",
+  "ultrasound",
+  "vaccine",
+  "other",
 ]);
 
 export const babies = pgTable(
@@ -95,6 +97,35 @@ export const babyPrepItems = pgTable(
   ],
 );
 
+export const babyMedicalAppointments = pgTable(
+  "baby_medical_appointments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+    babyId: uuid("baby_id")
+      .notNull()
+      .references(() => babies.id, { onDelete: "cascade" }),
+    type: babyMedicalTypeEnum("type").notNull().default("consultation"),
+    title: text("title").notNull(),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+    location: text("location"),
+    professional: text("professional"),
+    notes: text("notes"),
+    calendarEventId: uuid("calendar_event_id"),
+    createdBy: uuid("created_by").references(() => profiles.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("baby_medical_appointments_baby_idx").on(table.babyId),
+    index("baby_medical_appointments_scheduled_idx").on(table.babyId, table.scheduledAt),
+    index("baby_medical_appointments_workspace_idx").on(table.workspaceId),
+  ],
+);
+
 export type Baby = typeof babies.$inferSelect;
 export type BabyCareLog = typeof babyCareLogs.$inferSelect;
 export type BabyPrepItem = typeof babyPrepItems.$inferSelect;
+export type BabyMedicalAppointment = typeof babyMedicalAppointments.$inferSelect;

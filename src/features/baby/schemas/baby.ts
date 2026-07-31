@@ -61,9 +61,27 @@ export const applySuggestedPrepSchema = z.object({
   category: z.enum(babyPrepCategories),
 });
 
+export const babyMedicalTypes = ["consultation", "exam", "ultrasound", "vaccine", "other"] as const;
+export type BabyMedicalType = (typeof babyMedicalTypes)[number];
+
+export const addBabyMedicalAppointmentSchema = z.object({
+  babyId: z.string().uuid(),
+  type: z.enum(babyMedicalTypes),
+  title: z.string().trim().min(1).max(120),
+  scheduledAt: z.string().min(1),
+  location: z.string().trim().max(160).optional(),
+  professional: z.string().trim().max(120).optional(),
+  notes: z.string().trim().max(400).optional(),
+});
+
+export const deleteBabyMedicalAppointmentSchema = z.object({
+  appointmentId: z.string().uuid(),
+});
+
 export type CreateBabyInput = z.infer<typeof createBabySchema>;
 export type AddBabyCareLogInput = z.infer<typeof addBabyCareLogSchema>;
 export type AddBabyPrepItemInput = z.infer<typeof addBabyPrepItemSchema>;
+export type AddBabyMedicalAppointmentInput = z.infer<typeof addBabyMedicalAppointmentSchema>;
 
 /**
  * Listas sugeridas (Brasil) — lavagem 2–3×/semana.

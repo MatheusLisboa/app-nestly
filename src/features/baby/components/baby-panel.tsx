@@ -3,26 +3,42 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Baby, Backpack, Loader2, Moon, Pill, Plus, Shirt, Sparkles, Trash2 } from "lucide-react";
+import {
+  Baby,
+  Backpack,
+  Loader2,
+  Moon,
+  Pill,
+  Plus,
+  Shirt,
+  Sparkles,
+  Stethoscope,
+  Trash2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import {
   addBabyCareLogAction,
+  addBabyMedicalAppointmentAction,
   addBabyPrepItemAction,
   applySuggestedPrepAction,
   createBabyAction,
   deleteBabyCareLogAction,
+  deleteBabyMedicalAppointmentAction,
   deleteBabyPrepItemAction,
   markBabyBornAction,
   toggleBabyPrepItemAction,
 } from "@/features/baby/actions/baby-actions";
 import {
   addBabyCareLogSchema,
+  addBabyMedicalAppointmentSchema,
   addBabyPrepItemSchema,
   type BabyCareType,
+  type BabyMedicalType,
   type BabyPrepCategory,
+  babyMedicalTypes,
   babyPrepCategories,
   type CreateBabyInput,
   createBabySchema,
@@ -30,6 +46,7 @@ import {
 import type {
   BabyCareLogView,
   BabyCareSummary,
+  BabyMedicalAppointmentView,
   BabyPrepItemView,
   BabyPrepProgress,
   BabyView,
@@ -57,6 +74,7 @@ interface BabyPanelProps {
   logs: BabyCareLogView[];
   summary: BabyCareSummary | null;
   prep: BabyPrepProgress | null;
+  appointments: BabyMedicalAppointmentView[];
   canWrite: boolean;
 }
 
@@ -69,7 +87,24 @@ function formatDate(iso: string) {
   return new Date(`${iso.slice(0, 10)}T12:00:00`).toLocaleDateString("pt-BR");
 }
 
-export function BabyPanel({ baby, logs, summary, prep, canWrite }: BabyPanelProps) {
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function defaultMedicalScheduledLocal() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  d.setHours(10, 0, 0, 0);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+export function BabyPanel({ baby, logs, summary, prep, appointments, canWrite }: BabyPanelProps) {
   const t = useTranslations("baby");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -165,6 +200,7 @@ export function BabyPanel({ baby, logs, summary, prep, canWrite }: BabyPanelProp
       logs={logs}
       summary={summary}
       prep={prep}
+      appointments={appointments}
       canWrite={canWrite}
       pending={pending}
       startTransition={startTransition}
@@ -177,6 +213,7 @@ function BabyReadyPanel({
   logs,
   summary,
   prep,
+  appointments,
   canWrite,
   pending,
   startTransition,
@@ -185,13 +222,14 @@ function BabyReadyPanel({
   logs: BabyCareLogView[];
   summary: BabyCareSummary | null;
   prep: BabyPrepProgress | null;
+  appointments: BabyMedicalAppointmentView[];
   canWrite: boolean;
   pending: boolean;
   startTransition: (fn: () => void) => void;
 }) {
   const t = useTranslations("baby");
   const router = useRouter();
-  const defaultTab = baby.status === "born" ? "care" : "enxoval";
+  const defaultTab = baby.status === "born" ? "care" : "medical";
   const storageKey = `nestly:baby-tab:${baby.id}`;
   const [tab, setTab] = useState(defaultTab);
 
@@ -212,6 +250,8 @@ function BabyReadyPanel({
       // ignore
     }
   }
+
+  const nextAppointment = appointments.find((item) => !item.isPast) ?? null;
 
   return (
     <div className="space-y-6">
@@ -239,6 +279,15 @@ function BabyReadyPanel({
                     })
                   : t("subtitle")}
             </p>
+            {nextAppointment ? (
+              <p className="mt-2 flex items-center gap-1.5 text-sm text-primary">
+                <Icon icon={Stethoscope} size="sm" />
+                {t("medicalNext", {
+                  title: nextAppointment.title,
+                  when: formatDateTime(nextAppointment.scheduledAt),
+                })}
+              </p>
+            ) : null}
           </div>
           {canWrite && baby.status === "expected" ? (
             <Button
@@ -291,6 +340,7 @@ function BabyReadyPanel({
       <Tabs value={tab} onValueChange={onTabChange}>
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
           {baby.status === "born" ? <TabsTrigger value="care">{t("tabs.care")}</TabsTrigger> : null}
+          <TabsTrigger value="medical">{t("tabs.medical")}</TabsTrigger>
           {babyPrepCategories.map((category) => (
             <TabsTrigger key={category} value={category}>
               {t(`tabs.${category}`)}
@@ -311,6 +361,16 @@ function BabyReadyPanel({
           </TabsContent>
         ) : null}
 
+        <TabsContent value="medical">
+          <MedicalTab
+            babyId={baby.id}
+            appointments={appointments}
+            canWrite={canWrite}
+            pending={pending}
+            startTransition={startTransition}
+          />
+        </TabsContent>
+
         {prep
           ? babyPrepCategories.map((category) => (
               <TabsContent key={category} value={category}>
@@ -327,6 +387,230 @@ function BabyReadyPanel({
           : null}
       </Tabs>
     </div>
+  );
+}
+
+function MedicalTab({
+  babyId,
+  appointments,
+  canWrite,
+  pending,
+  startTransition,
+}: {
+  babyId: string;
+  appointments: BabyMedicalAppointmentView[];
+  canWrite: boolean;
+  pending: boolean;
+  startTransition: (fn: () => void) => void;
+}) {
+  const t = useTranslations("baby");
+  const router = useRouter();
+
+  const form = useForm<{
+    type: BabyMedicalType;
+    title: string;
+    scheduledAt: string;
+    location?: string;
+    professional?: string;
+    notes?: string;
+  }>({
+    resolver: zodResolver(addBabyMedicalAppointmentSchema.omit({ babyId: true })),
+    defaultValues: {
+      type: "consultation",
+      title: "",
+      scheduledAt: defaultMedicalScheduledLocal(),
+      location: "",
+      professional: "",
+      notes: "",
+    },
+  });
+
+  async function onAdd(values: {
+    type: BabyMedicalType;
+    title: string;
+    scheduledAt: string;
+    location?: string;
+    professional?: string;
+    notes?: string;
+  }) {
+    const result = await addBabyMedicalAppointmentAction({
+      babyId,
+      type: values.type,
+      title: values.title,
+      scheduledAt: values.scheduledAt,
+      location: values.location || undefined,
+      professional: values.professional || undefined,
+      notes: values.notes || undefined,
+    });
+    if (!result.ok) {
+      toast.error(result.error.message);
+      return;
+    }
+    toast.success(t("medicalAdded"));
+    form.reset({
+      type: "consultation",
+      title: "",
+      scheduledAt: defaultMedicalScheduledLocal(),
+      location: "",
+      professional: "",
+      notes: "",
+    });
+    router.refresh();
+  }
+
+  function onDelete(appointmentId: string) {
+    startTransition(async () => {
+      const result = await deleteBabyMedicalAppointmentAction({ appointmentId });
+      if (!result.ok) {
+        toast.error(result.error.message);
+        return;
+      }
+      toast.success(t("medicalRemoved"));
+      router.refresh();
+    });
+  }
+
+  const upcoming = appointments.filter((item) => !item.isPast);
+  const past = appointments.filter((item) => item.isPast).reverse();
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">{t("medicalHint")}</p>
+
+      {canWrite ? (
+        <form
+          className="space-y-3 rounded-2xl border border-border bg-card/70 p-3 shadow-xs sm:p-4"
+          onSubmit={form.handleSubmit(onAdd)}
+        >
+          <div className="flex flex-wrap gap-2">
+            {babyMedicalTypes.map((type) => (
+              <Button
+                key={type}
+                type="button"
+                size="sm"
+                variant={form.watch("type") === type ? "default" : "outline"}
+                onClick={() => form.setValue("type", type)}
+              >
+                {t(`medicalTypes.${type}`)}
+              </Button>
+            ))}
+          </div>
+          <Input placeholder={t("medicalTitlePlaceholder")} {...form.register("title")} />
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">{t("medicalWhenLabel")}</p>
+              <Input type="datetime-local" {...form.register("scheduledAt")} />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">{t("medicalLocationLabel")}</p>
+              <Input placeholder={t("medicalLocationPlaceholder")} {...form.register("location")} />
+            </div>
+          </div>
+          <Input
+            placeholder={t("medicalProfessionalPlaceholder")}
+            {...form.register("professional")}
+          />
+          <Input placeholder={t("medicalNotesPlaceholder")} {...form.register("notes")} />
+          <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Icon icon={Plus} />
+            )}
+            {t("medicalAdd")}
+          </Button>
+          <p className="text-xs text-muted-foreground">{t("medicalCalendarNote")}</p>
+        </form>
+      ) : null}
+
+      {appointments.length === 0 ? (
+        <EmptyState title={t("medicalEmptyTitle")} description={t("medicalEmptyDescription")} />
+      ) : (
+        <div className="space-y-4">
+          <MedicalGroup
+            title={t("medicalUpcoming")}
+            items={upcoming}
+            canWrite={canWrite}
+            pending={pending}
+            onDelete={onDelete}
+          />
+          <MedicalGroup
+            title={t("medicalPast")}
+            items={past}
+            canWrite={canWrite}
+            pending={pending}
+            onDelete={onDelete}
+            muted
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MedicalGroup({
+  title,
+  items,
+  canWrite,
+  pending,
+  onDelete,
+  muted,
+}: {
+  title: string;
+  items: BabyMedicalAppointmentView[];
+  canWrite: boolean;
+  pending: boolean;
+  onDelete: (id: string) => void;
+  muted?: boolean;
+}) {
+  const t = useTranslations("baby");
+  if (items.length === 0) return null;
+
+  return (
+    <section className="space-y-2">
+      <div className="flex items-center gap-2">
+        <h2 className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          {title}
+        </h2>
+        <Badge variant="secondary">{items.length}</Badge>
+      </div>
+      <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card/60 shadow-xs">
+        {items.map((item) => (
+          <li
+            key={item.id}
+            className={`flex items-start gap-3 px-4 py-3 ${muted ? "opacity-70" : ""}`}
+          >
+            <Icon icon={Stethoscope} size="sm" className="mt-0.5 text-muted-foreground" />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">{t(`medicalTypes.${item.type}`)}</Badge>
+                <p className="text-sm font-semibold tracking-tight">{item.title}</p>
+              </div>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {formatDateTime(item.scheduledAt)}
+                {item.location ? ` · ${item.location}` : ""}
+                {item.professional ? ` · ${item.professional}` : ""}
+              </p>
+              {item.notes ? (
+                <p className="mt-1 text-xs text-muted-foreground">{item.notes}</p>
+              ) : null}
+            </div>
+            {canWrite ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                disabled={pending}
+                aria-label={t("delete")}
+                onClick={() => onDelete(item.id)}
+              >
+                <Icon icon={Trash2} size="sm" />
+              </Button>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
