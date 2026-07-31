@@ -3,6 +3,8 @@ import { isSupabaseConfigured } from "@/config/env";
 import { getSessionUser } from "@/features/auth/services/session";
 import { AppShell } from "@/features/shared";
 import { OfflineBootstrap } from "@/features/shared/components/providers/offline-bootstrap";
+import { PwaInstallPrompt } from "@/features/shared/components/providers/pwa-install-prompt";
+import { WorkspaceRealtimeRefresh } from "@/features/shared/components/providers/workspace-realtime-refresh";
 import { WorkspaceShellProvider } from "@/features/workspace/components/workspace-shell-provider";
 import {
   listUserWorkspaces,
@@ -41,6 +43,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <WorkspaceShellProvider user={user} workspaces={workspaces} activeWorkspace={activeWorkspace}>
       <OfflineBootstrap />
+      <WorkspaceRealtimeRefresh />
+      <PwaInstallPrompt />
       <AppShell>{children}</AppShell>
     </WorkspaceShellProvider>
   );

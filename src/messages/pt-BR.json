@@ -22,7 +22,13 @@
     "commandPalette": "Buscar ou executar comando…"
   },
   "pwa": {
-    "updating": "Atualizando o Nestly…"
+    "updating": "Atualizando o Nestly…",
+    "installTitle": "Instalar o Nestly",
+    "installDescription": "Adicione à tela inicial e use como app — rápido e sem loja.",
+    "installIosHint": "No Safari: Compartilhar → Adicionar à Tela de Início.",
+    "installCta": "Instalar",
+    "installLater": "Agora não",
+    "installDismiss": "Fechar"
   },
   "workspace": {
     "displayName": "Família",
@@ -73,7 +79,7 @@
     "displayNamePlaceholder": "Como devemos te chamar?",
     "noAccount": "Não tem conta?",
     "hasAccount": "Já tem conta?",
-    "welcomeBack": "Bem-vindo de volta",
+    "welcomeBack": "Bem-vindo",
     "welcomeBackHint": "Entre para continuar organizando a casa em família.",
     "orEmail": "ou continue com e-mail",
     "confirmEmail": "Conta criada. Confirme o e-mail enviado e depois faça login.",
@@ -84,6 +90,21 @@
     "title": "Início",
     "subtitle": "Tudo o que importa na sua casa, em um só lugar.",
     "subtitleWithWorkspace": "Rotina de {workspace}, em um só lugar.",
+    "todayTitle": "Hoje",
+    "todaySubtitle": "O que pede atenção na casa agora.",
+    "todaySubtitleWithWorkspace": "O que pede atenção em {workspace} agora.",
+    "todayEmptyTitle": "Tudo calmo por aqui",
+    "todayEmptyDescription": "Quando houver compras, contas, limpeza ou consultas, aparece neste início.",
+    "sectionShopping": "Compras",
+    "sectionBills": "Contas",
+    "sectionCleaning": "Limpeza",
+    "sectionCalendar": "Agenda",
+    "sectionMedical": "Consultas",
+    "sectionBaby": "Bebê",
+    "shoppingOpen": "{count, plural, one {# aberto} other {# abertos}}",
+    "seeAll": "Ver tudo",
+    "babyExpected": "Gestação",
+    "babyBorn": "Nascido",
     "emptyTitle": "Sua casa começa aqui",
     "emptyDescription": "Os módulos de rotina chegarão em breve. A fundação do Nestly já está pronta.",
     "emptyDescriptionWithWorkspace": "{workspace} está pronta. Os próximos módulos da {workspaceLabel} chegam em breve."

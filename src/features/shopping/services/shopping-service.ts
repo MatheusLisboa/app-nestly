@@ -72,6 +72,32 @@ export async function ensureDefaultShoppingList(): Promise<ShoppingListView> {
   };
 }
 
+/** Read-only: does not create a list (safe for viewers / dashboard). */
+export async function getActiveShoppingList(): Promise<ShoppingListView | null> {
+  const { workspace, supabase } = await requireActiveWorkspaceContext("shopping.read");
+
+  const { data, error } = await supabase
+    .from("shopping_lists")
+    .select("id, title, status, updated_at")
+    .eq("workspace_id", workspace.id)
+    .eq("status", "active")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw new DomainError("SHOPPING_LIST_FAILED", error.message);
+  }
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    title: data.title,
+    status: data.status,
+    updatedAt: data.updated_at,
+  };
+}
+
 export async function listShoppingItems(listId: string): Promise<ShoppingItemView[]> {
   const { workspace, supabase } = await requireActiveWorkspaceContext("shopping.read");
 
