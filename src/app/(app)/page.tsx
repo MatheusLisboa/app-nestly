@@ -53,7 +53,6 @@ export default async function DashboardPage() {
           bills: t("sectionBills"),
           cleaning: t("sectionCleaning"),
           calendar: t("sectionCalendar"),
-          medical: t("sectionMedical"),
           baby: t("sectionBaby"),
           emptyTitle: t("todayEmptyTitle"),
           emptyDescription: t("todayEmptyDescription"),

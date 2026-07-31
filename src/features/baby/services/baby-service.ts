@@ -6,6 +6,7 @@ import {
   DEFAULT_PREP_ITEMS,
 } from "@/features/baby/schemas/baby";
 import { DomainError } from "@/lib/errors";
+import { localDateTimeToUtcIso } from "@/lib/utils/datetime";
 import { requireActiveWorkspaceContext } from "@/lib/workspace/require-workspace";
 
 export type BabyView = {
@@ -590,7 +591,12 @@ export async function addBabyMedicalAppointment(input: {
 }): Promise<BabyMedicalAppointmentView> {
   const { user, workspace, supabase } = await requireActiveWorkspaceContext("baby.write");
 
-  const scheduledAt = new Date(input.scheduledAt).toISOString();
+  let scheduledAt: string;
+  try {
+    scheduledAt = localDateTimeToUtcIso(input.scheduledAt);
+  } catch {
+    throw new DomainError("VALIDATION_ERROR", "Data/hora inválida.");
+  }
   if (Number.isNaN(new Date(scheduledAt).getTime())) {
     throw new DomainError("VALIDATION_ERROR", "Data/hora inválida.");
   }

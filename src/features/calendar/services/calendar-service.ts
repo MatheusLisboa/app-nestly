@@ -1,4 +1,5 @@
 import { DomainError } from "@/lib/errors";
+import { localDateTimeToUtcIso } from "@/lib/utils/datetime";
 import { requireActiveWorkspaceContext } from "@/lib/workspace/require-workspace";
 
 export type CalendarEventView = {
@@ -70,14 +71,19 @@ export async function createCalendarEvent(input: {
   const { user, workspace, supabase } = await requireActiveWorkspaceContext("calendar.write");
 
   const startsAt = input.allDay
-    ? `${input.startsAt.slice(0, 10)}T12:00:00.000Z`
-    : new Date(input.startsAt).toISOString();
+    ? localDateTimeToUtcIso(input.startsAt.slice(0, 10))
+    : localDateTimeToUtcIso(input.startsAt);
 
-  const endsAt = input.endsAt
-    ? input.allDay
-      ? `${input.endsAt.slice(0, 10)}T12:00:00.000Z`
-      : new Date(input.endsAt).toISOString()
-    : null;
+  let endsAt: string | null = null;
+  if (input.endsAt) {
+    endsAt = input.allDay
+      ? localDateTimeToUtcIso(input.endsAt.slice(0, 10))
+      : localDateTimeToUtcIso(input.endsAt);
+  }
+
+  if (Number.isNaN(new Date(startsAt).getTime()) || (endsAt && Number.isNaN(new Date(endsAt).getTime()))) {
+    throw new DomainError("VALIDATION_ERROR", "Data/hora inválida.");
+  }
 
   const { data, error } = await supabase
     .from("calendar_events")

@@ -37,13 +37,16 @@ export function ModalContent({
       <ModalOverlay />
       <DialogPrimitive.Content
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl border border-border bg-popover p-6 text-popover-foreground shadow-lg transition-soft",
+          // Mobile: bottom sheet. Desktop: centered card.
+          "fixed z-50 flex w-full max-w-lg flex-col gap-4 border border-border bg-popover text-popover-foreground shadow-lg transition-soft",
+          "inset-x-0 bottom-0 max-h-[min(92dvh,100%)] rounded-t-3xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-6 sm:pb-6",
           "data-[state=open]:opacity-100 data-[state=closed]:opacity-0",
           className,
         )}
         {...props}
       >
-        {children}
+        <div className="mx-auto mb-1 h-1 w-10 shrink-0 rounded-full bg-muted sm:hidden" aria-hidden />
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
         <DialogPrimitive.Close asChild>
           <Button
             type="button"

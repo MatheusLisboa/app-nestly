@@ -12,7 +12,6 @@ type Labels = {
   bills: string;
   cleaning: string;
   calendar: string;
-  medical: string;
   baby: string;
   emptyTitle: string;
   emptyDescription: string;
@@ -95,17 +94,6 @@ export function TodayDashboard({ digest, labels }: { digest: TodayDigest; labels
         items={digest.upcomingEvents}
         seeAll={labels.seeAll}
       />
-
-      {digest.upcomingMedical.length > 0 ? (
-        <DigestSection
-          title={labels.medical}
-          href="/baby"
-          icon={Baby}
-          items={digest.upcomingMedical}
-          seeAll={labels.seeAll}
-          className="lg:col-span-2"
-        />
-      ) : null}
     </div>
   );
 }

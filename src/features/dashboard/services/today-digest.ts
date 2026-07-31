@@ -1,4 +1,4 @@
-import { listBabies, listBabyMedicalAppointments } from "@/features/baby/services/baby-service";
+import { listBabies } from "@/features/baby/services/baby-service";
 import { listBills } from "@/features/bills/services/bills-service";
 import { listCalendarEvents } from "@/features/calendar/services/calendar-service";
 import { listCleaningTasks } from "@/features/cleaning/services/cleaning-service";
@@ -6,6 +6,7 @@ import {
   getActiveShoppingList,
   listShoppingItems,
 } from "@/features/shopping/services/shopping-service";
+import { formatDateTimePtBr } from "@/lib/utils/datetime";
 
 export type TodayDigestItem = {
   id: string;
@@ -21,7 +22,6 @@ export type TodayDigest = {
   billsAttention: TodayDigestItem[];
   cleaningAttention: TodayDigestItem[];
   upcomingEvents: TodayDigestItem[];
-  upcomingMedical: TodayDigestItem[];
   baby: {
     name: string;
     status: "expected" | "born";
@@ -44,15 +44,6 @@ function formatShortDate(isoDate: string): string {
   });
 }
 
-function formatShortDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
     return await fn();
@@ -64,6 +55,9 @@ async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
 /**
  * Aggregates “what matters today” across modules for the home dashboard.
  * Failures in one module do not block the rest.
+ *
+ * Consultas/exames already sync into calendar_events — only the Agenda section
+ * is shown so the same appointment is not listed twice.
  */
 export async function getTodayDigest(): Promise<TodayDigest> {
   const now = Date.now();
@@ -152,27 +146,14 @@ export async function getTodayDigest(): Promise<TodayDigest> {
       id: event.id,
       href: "/calendar",
       title: event.title,
-      meta: formatShortDateTime(event.startsAt),
+      meta: formatDateTimePtBr(event.startsAt),
       tone: "soon",
     }));
 
   const baby = babies[0] ?? null;
-  let upcomingMedical: TodayDigestItem[] = [];
   let babyCard: TodayDigest["baby"] = null;
 
   if (baby) {
-    const appointments = await safe(() => listBabyMedicalAppointments(baby.id), []);
-    upcomingMedical = appointments
-      .filter((item) => !item.isPast)
-      .slice(0, 4)
-      .map((item) => ({
-        id: item.id,
-        href: "/baby",
-        title: item.title,
-        meta: formatShortDateTime(item.scheduledAt),
-        tone: "soon",
-      }));
-
     babyCard = {
       name: baby.name,
       status: baby.status,
@@ -197,7 +178,6 @@ export async function getTodayDigest(): Promise<TodayDigest> {
     billsAttention.length > 0 ||
     cleaningAttention.length > 0 ||
     upcomingEvents.length > 0 ||
-    upcomingMedical.length > 0 ||
     babyCard != null;
 
   return {
@@ -206,7 +186,6 @@ export async function getTodayDigest(): Promise<TodayDigest> {
     billsAttention,
     cleaningAttention,
     upcomingEvents,
-    upcomingMedical,
     baby: babyCard,
     hasAnything,
   };

@@ -110,11 +110,12 @@ export function BillsPanel({ bills, canWrite }: BillsPanelProps) {
 
       {canWrite ? (
         <form
-          className="grid gap-2 rounded-2xl border border-border bg-card/70 p-3 shadow-xs sm:grid-cols-[1fr_7rem_8rem_8rem_auto]"
+          className="grid grid-cols-1 gap-2 rounded-2xl border border-border bg-card/70 p-3 shadow-xs sm:grid-cols-[minmax(0,1fr)_7rem_minmax(0,9rem)_8rem_auto]"
           onSubmit={form.handleSubmit(onCreate)}
         >
           <Input
             placeholder={t("titlePlaceholder")}
+            className="min-w-0"
             disabled={form.formState.isSubmitting}
             {...form.register("title")}
           />
@@ -123,12 +124,18 @@ export function BillsPanel({ bills, canWrite }: BillsPanelProps) {
             step="0.01"
             min="0"
             placeholder={t("amountPlaceholder")}
+            className="min-w-0"
             disabled={form.formState.isSubmitting}
             {...form.register("amount")}
           />
-          <Input type="date" disabled={form.formState.isSubmitting} {...form.register("dueDate")} />
+          <Input
+            type="date"
+            className="min-w-0"
+            disabled={form.formState.isSubmitting}
+            {...form.register("dueDate")}
+          />
           <select
-            className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
+            className="h-11 w-full min-w-0 rounded-xl border border-border bg-background px-3 text-sm"
             disabled={form.formState.isSubmitting}
             {...form.register("recurrence")}
           >
@@ -136,7 +143,7 @@ export function BillsPanel({ bills, canWrite }: BillsPanelProps) {
             <option value="yearly">{t("recurrence.yearly")}</option>
             <option value="once">{t("recurrence.once")}</option>
           </select>
-          <Button type="submit" disabled={form.formState.isSubmitting}>
+          <Button type="submit" disabled={form.formState.isSubmitting} className="sm:w-auto">
             {form.formState.isSubmitting ? (
               <Loader2 className="animate-spin" />
             ) : (

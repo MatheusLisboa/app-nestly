@@ -89,6 +89,7 @@ function formatDate(iso: string) {
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -168,14 +169,14 @@ export function BabyPanel({ baby, logs, summary, prep, appointments, canWrite }:
               </Button>
             </div>
             {statusWatch === "expected" ? (
-              <div className="space-y-1">
+              <div className="min-w-0 space-y-1">
                 <p className="text-xs text-muted-foreground">{t("dueDateLabel")}</p>
-                <Input type="date" {...createForm.register("dueDate")} />
+                <Input type="date" className="min-w-0" {...createForm.register("dueDate")} />
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className="min-w-0 space-y-1">
                 <p className="text-xs text-muted-foreground">{t("birthDateLabel")}</p>
-                <Input type="date" {...createForm.register("birthDate")} />
+                <Input type="date" className="min-w-0" {...createForm.register("birthDate")} />
               </div>
             )}
             <Button type="submit" disabled={createForm.formState.isSubmitting}>
@@ -496,12 +497,12 @@ function MedicalTab({
             ))}
           </div>
           <Input placeholder={t("medicalTitlePlaceholder")} {...form.register("title")} />
-          <div className="grid gap-2 sm:grid-cols-2">
-            <div className="space-y-1">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="min-w-0 space-y-1">
               <p className="text-xs text-muted-foreground">{t("medicalWhenLabel")}</p>
-              <Input type="datetime-local" {...form.register("scheduledAt")} />
+              <Input type="datetime-local" className="min-w-0" {...form.register("scheduledAt")} />
             </div>
-            <div className="space-y-1">
+            <div className="min-w-0 space-y-1">
               <p className="text-xs text-muted-foreground">{t("medicalLocationLabel")}</p>
               <Input placeholder={t("medicalLocationPlaceholder")} {...form.register("location")} />
             </div>

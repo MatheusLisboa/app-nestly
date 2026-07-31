@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, isBefore, isSameDay, parseISO, startOfDay } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarDays, Loader2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ import {
 } from "@/features/calendar/schemas/calendar";
 import type { CalendarEventView } from "@/features/calendar/services/calendar-service";
 import { Badge, Button, Calendar, EmptyState, Icon, Input, toast } from "@/features/shared";
+import { DEFAULT_WORKSPACE_TIMEZONE, formatTimePtBr } from "@/lib/utils/datetime";
 
 interface CalendarPanelProps {
   events: CalendarEventView[];
@@ -30,26 +31,31 @@ type EventGroup = {
   events: CalendarEventView[];
 };
 
+function eventDayKey(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-CA", { timeZone: DEFAULT_WORKSPACE_TIMEZONE });
+}
+
 export function CalendarPanel({ events, canWrite }: CalendarPanelProps) {
   const t = useTranslations("calendar");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [selected, setSelected] = useState(() => new Date());
+  const selectedKey = format(selected, "yyyy-MM-dd");
 
   const dayEvents = useMemo(
-    () => events.filter((event) => isSameDay(parseISO(event.startsAt), selected)),
-    [events, selected],
+    () => events.filter((event) => eventDayKey(event.startsAt) === selectedKey),
+    [events, selectedKey],
   );
 
   const upcomingGroups = useMemo(() => {
-    const today = startOfDay(new Date());
+    const todayKey = format(new Date(), "yyyy-MM-dd");
     const upcoming = events
-      .filter((event) => !isBefore(parseISO(event.startsAt), today))
+      .filter((event) => eventDayKey(event.startsAt) >= todayKey)
       .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 
     const groups = new Map<string, EventGroup>();
     for (const event of upcoming) {
-      const key = format(parseISO(event.startsAt), "yyyy-MM-dd");
+      const key = eventDayKey(event.startsAt);
       const existing = groups.get(key);
       if (existing) {
         existing.events.push(event);
@@ -57,7 +63,7 @@ export function CalendarPanel({ events, canWrite }: CalendarPanelProps) {
       }
       groups.set(key, {
         key,
-        label: format(parseISO(event.startsAt), "EEEE, d MMM", { locale: ptBR }),
+        label: format(parseISO(`${key}T12:00:00`), "EEEE, d MMM", { locale: ptBR }),
         events: [event],
       });
     }
@@ -158,7 +164,7 @@ export function CalendarPanel({ events, canWrite }: CalendarPanelProps) {
                         </div>
                         <p className="text-xs text-muted-foreground">
                           {[
-                            event.allDay ? t("allDay") : format(parseISO(event.startsAt), "HH:mm"),
+                            event.allDay ? t("allDay") : formatTimePtBr(event.startsAt),
                             event.location,
                           ]
                             .filter(Boolean)
@@ -207,9 +213,10 @@ export function CalendarPanel({ events, canWrite }: CalendarPanelProps) {
                 disabled={form.formState.isSubmitting}
                 {...form.register("title")}
               />
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <Input
                   type="datetime-local"
+                  className="min-w-0"
                   disabled={form.formState.isSubmitting}
                   {...form.register("startsAt")}
                 />
@@ -256,7 +263,7 @@ export function CalendarPanel({ events, canWrite }: CalendarPanelProps) {
                       </div>
                       <p className="text-xs text-muted-foreground">
                         {[
-                          event.allDay ? t("allDay") : format(parseISO(event.startsAt), "HH:mm"),
+                          event.allDay ? t("allDay") : formatTimePtBr(event.startsAt),
                           event.location,
                         ]
                           .filter(Boolean)
