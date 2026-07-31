@@ -26,17 +26,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/login");
   }
 
-  let workspaces: Awaited<ReturnType<typeof listUserWorkspaces>> = [];
-  let activeWorkspace: Awaited<ReturnType<typeof resolveActiveWorkspace>> = null;
-
-  try {
-    workspaces = await listUserWorkspaces();
-    activeWorkspace = await resolveActiveWorkspace();
-  } catch {
+  const workspaces = await listUserWorkspaces();
+  if (workspaces.length === 0) {
     redirect("/onboarding");
   }
 
-  if (workspaces.length === 0 || !activeWorkspace) {
+  // Prefer cookie when present; otherwise first membership (no cookie write in RSC).
+  const activeWorkspace = await resolveActiveWorkspace();
+  if (!activeWorkspace) {
     redirect("/onboarding");
   }
 

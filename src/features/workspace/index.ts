@@ -5,6 +5,7 @@ export const workspaceFeature = {
 export {
   acceptInviteAction,
   createWorkspaceAction,
+  ensureActiveWorkspaceCookieAction,
   inviteMemberAction,
   switchWorkspaceAction,
 } from "./actions/workspace-actions";
@@ -21,6 +22,7 @@ export {
 export {
   acceptInvitation,
   createWorkspace,
+  ensureActiveWorkspaceCookie,
   inviteMember,
   listUserWorkspaces,
   listWorkspaceMembers,

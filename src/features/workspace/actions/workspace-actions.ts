@@ -10,10 +10,16 @@ import {
 import {
   acceptInvitation,
   createWorkspace,
+  ensureActiveWorkspaceCookie,
   inviteMember,
   switchWorkspace,
 } from "@/features/workspace/services/workspace-service";
 import { createSafeAction } from "@/lib/actions/safe-action";
+
+/** Persist active workspace cookie after password login (no auth callback). */
+export async function ensureActiveWorkspaceCookieAction() {
+  return ensureActiveWorkspaceCookie();
+}
 
 export const createWorkspaceAction = createSafeAction({
   schema: createWorkspaceSchema,

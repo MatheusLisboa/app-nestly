@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { appConfig } from "@/config/app";
 import { getSupabasePublicCredentials } from "@/lib/supabase/credentials";
 
 /**
@@ -43,6 +44,31 @@ export async function GET(request: NextRequest) {
     },
   });
 
+  async function attachActiveWorkspaceCookie(userId: string) {
+    try {
+      const existing = request.cookies.get(appConfig.activeWorkspaceCookie)?.value;
+      const { data: memberships } = await supabase
+        .from("workspace_members")
+        .select("workspace_id")
+        .eq("user_id", userId);
+
+      const ids = (memberships ?? []).map((row) => row.workspace_id as string);
+      if (ids.length === 0) return;
+
+      const workspaceId =
+        existing && ids.includes(existing) ? existing : (ids[0] as string);
+      redirectResponse.cookies.set(appConfig.activeWorkspaceCookie, workspaceId, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      });
+    } catch {
+      // ignore — resolveActiveWorkspace falls back to first membership
+    }
+  }
+
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
@@ -72,12 +98,13 @@ export async function GET(request: NextRequest) {
       // ignore
     }
 
+    await attachActiveWorkspaceCookie(data.user.id);
     return redirectResponse;
   }
 
   // Fallback for email links that use token_hash (OTP verify)
   if (tokenHash && type) {
-    const { error } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
       type: type as "email" | "magiclink" | "signup" | "invite" | "recovery" | "email_change",
       token_hash: tokenHash,
     });
@@ -86,6 +113,10 @@ export async function GET(request: NextRequest) {
       const loginUrl = new URL("/login", origin);
       loginUrl.searchParams.set("error", error.message);
       return NextResponse.redirect(loginUrl);
+    }
+
+    if (data.user) {
+      await attachActiveWorkspaceCookie(data.user.id);
     }
 
     return redirectResponse;

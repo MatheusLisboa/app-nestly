@@ -38,25 +38,43 @@ export async function listUserWorkspaces(): Promise<WorkspaceSummary[]> {
   await ensureProfile(user);
   const supabase = await createServerSupabaseClient();
 
-  const { data, error } = await supabase
+  // Two-step query: memberships first (own rows), then workspaces.
+  // Avoids empty lists when the embed join is filtered by RLS.
+  const { data: memberships, error: memberError } = await supabase
     .from("workspace_members")
-    .select("role, workspace:workspaces(id, name, slug)")
-    .eq("user_id", user.id);
+    .select("role, workspace_id, joined_at")
+    .eq("user_id", user.id)
+    .order("joined_at", { ascending: true });
 
-  if (error) {
-    throw new DomainError("WORKSPACE_LIST_FAILED", error.message);
+  if (memberError) {
+    throw new DomainError("WORKSPACE_LIST_FAILED", memberError.message);
   }
 
-  return (data ?? [])
+  if (!memberships?.length) {
+    return [];
+  }
+
+  const workspaceIds = memberships.map((row) => row.workspace_id as string);
+  const { data: workspaces, error: workspaceError } = await supabase
+    .from("workspaces")
+    .select("id, name, slug")
+    .in("id", workspaceIds);
+
+  if (workspaceError) {
+    throw new DomainError("WORKSPACE_LIST_FAILED", workspaceError.message);
+  }
+
+  const byId = new Map(
+    (workspaces ?? []).map((ws) => [
+      ws.id as string,
+      ws as { id: string; name: string; slug: string },
+    ]),
+  );
+
+  return memberships
     .map((row) => {
-      const workspace = row.workspace as
-        | { id: string; name: string; slug: string }
-        | { id: string; name: string; slug: string }[]
-        | null;
-
-      const ws = Array.isArray(workspace) ? workspace[0] : workspace;
+      const ws = byId.get(row.workspace_id as string);
       if (!ws) return null;
-
       return {
         id: ws.id,
         name: ws.name,
@@ -68,20 +86,32 @@ export async function listUserWorkspaces(): Promise<WorkspaceSummary[]> {
     .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 }
 
+/**
+ * Resolves the active workspace for the current user.
+ * Read-only: never mutates cookies here — Next.js forbids cookie writes in RSC
+ * (e.g. layouts), and a throw was incorrectly sending users to /onboarding.
+ * Cookie is set in auth callback, server actions (create/switch/accept), or
+ * ensureActiveWorkspaceCookie().
+ */
 export async function resolveActiveWorkspace(): Promise<WorkspaceSummary | null> {
   const workspaces = await listUserWorkspaces();
   if (workspaces.length === 0) {
+    return null;
+  }
+
+  const cookieId = await getActiveWorkspaceIdFromCookie();
+  return workspaces.find((ws) => ws.id === cookieId) ?? workspaces[0] ?? null;
+}
+
+/** Safe to call from Server Actions / Route Handlers only. */
+export async function ensureActiveWorkspaceCookie(): Promise<WorkspaceSummary | null> {
+  const active = await resolveActiveWorkspace();
+  if (!active) {
     await clearActiveWorkspaceCookie();
     return null;
   }
 
   const cookieId = await getActiveWorkspaceIdFromCookie();
-  const active = workspaces.find((ws) => ws.id === cookieId) ?? workspaces[0];
-
-  if (!active) {
-    return null;
-  }
-
   if (cookieId !== active.id) {
     await setActiveWorkspaceCookie(active.id);
   }

@@ -28,6 +28,7 @@ export default async function OnboardingPage() {
   try {
     const workspaces = await listUserWorkspaces();
     if (workspaces.length > 0) {
+      // Cookie writes belong in a route/action; home resolves without needing one.
       redirect("/");
     }
   } catch {

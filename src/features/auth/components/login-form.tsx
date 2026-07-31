@@ -17,6 +17,7 @@ import {
 import { Button } from "@/features/shared/components/ui/button";
 import { Input } from "@/features/shared/components/ui/input";
 import { Label } from "@/features/shared/components/ui/label";
+import { ensureActiveWorkspaceCookieAction } from "@/features/workspace/actions/workspace-actions";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type AuthMode = "signIn" | "signUp";
@@ -118,6 +119,8 @@ export function LoginForm({ initialError = null }: LoginFormProps) {
           },
           { onConflict: "id" },
         );
+
+        await ensureActiveWorkspaceCookieAction();
       }
 
       router.replace("/");
