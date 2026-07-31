@@ -1,4 +1,4 @@
--- MyNinho — Checklists tables + RLS
+-- Nestly — Checklists tables + RLS
 -- Safe to run in Supabase SQL Editor after shopping/inventory exist.
 -- Prefer this over `db:push` if drizzle wants to drop existing RLS policies.
 

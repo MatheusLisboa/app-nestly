@@ -1,4 +1,4 @@
--- MyNinho Phase 0 — Row Level Security foundation
+-- Nestly Phase 0 — Row Level Security foundation
 -- Apply after Drizzle migrations (or merge into a SQL migration).
 -- Isolates every tenant row by workspace membership.
 

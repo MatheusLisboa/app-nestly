@@ -44,15 +44,24 @@ export function AppSidebar() {
     <Sidebar
       aria-label={tA11y("mainNavigation")}
       header={
-        <div className="space-y-3 px-1 pt-1">
-          <Link href="/" className="block px-2 py-1">
-            <Logo size="sm" />
+        <div className="space-y-2 lg:space-y-3">
+          <Link
+            href="/"
+            className="flex items-center justify-center rounded-xl py-0.5 lg:justify-start lg:px-1"
+            aria-label={brand.name}
+          >
+            <span className="lg:hidden">
+              <Logo variant="mark" size="sm" />
+            </span>
+            <span className="hidden lg:inline-flex">
+              <Logo size="sm" />
+            </span>
           </Link>
-          <WorkspaceSwitcher workspaces={workspaces} active={activeWorkspace} />
+          <WorkspaceSwitcher workspaces={workspaces} active={activeWorkspace} compact />
         </div>
       }
       footer={
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-col items-center gap-2 lg:flex-row lg:justify-between">
           {user ? <UserMenu email={user.email} displayName={user.displayName} /> : <span />}
           <ThemeToggle />
         </div>
@@ -62,26 +71,29 @@ export function AppSidebar() {
         {mainNav.map((item) => {
           const Glyph = item.icon;
           const active = isActivePath(pathname, item.href);
+          const label = tNav(item.labelKey);
 
           if (item.disabled) {
             return (
-              <SidebarNavItem key={item.href} disabled icon={<Glyph />} title={tNav(item.labelKey)}>
-                {tNav(item.labelKey)}
+              <SidebarNavItem key={item.href} disabled icon={<Glyph />} title={label}>
+                {label}
               </SidebarNavItem>
             );
           }
 
           return (
-            <Link key={item.href} href={item.href} className="block">
-              <SidebarNavItem active={active} icon={<Glyph />}>
-                {tNav(item.labelKey)}
+            <Link key={item.href} href={item.href} className="block" title={label}>
+              <SidebarNavItem active={active} icon={<Glyph />} title={label}>
+                {label}
               </SidebarNavItem>
             </Link>
           );
         })}
       </nav>
-      <Separator className="my-3 bg-sidebar-border" />
-      <p className="px-3 text-[11px] leading-relaxed text-muted-foreground">{brand.tagline}</p>
+      <Separator className="my-3 hidden bg-sidebar-border lg:block" />
+      <p className="hidden px-3 text-[11px] leading-relaxed text-muted-foreground lg:block">
+        {brand.tagline}
+      </p>
     </Sidebar>
   );
 }

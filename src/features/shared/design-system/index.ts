@@ -1,5 +1,5 @@
 /**
- * MyNinho Design Language — overview.
+ * Nestly Design Language — overview.
  * Tokens live in `tokens.ts` + `src/styles/globals.css`.
  * Components are exported from `@/features/shared`.
  */

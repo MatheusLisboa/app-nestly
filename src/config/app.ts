@@ -7,7 +7,7 @@ export const appConfig = {
   /** UI label for Workspace — product copy may say "Família" */
   workspaceDisplayNameKey: "workspace.displayName" as const,
   /** Cookie / storage key for active workspace */
-  activeWorkspaceCookie: "myninho_active_workspace",
+  activeWorkspaceCookie: "nestly_active_workspace",
   defaultTheme: "system" as const,
 } as const;
 

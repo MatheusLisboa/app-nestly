@@ -1,5 +1,5 @@
 /**
- * MyNinho Design Language — token source of truth (JS).
+ * Nestly Design Language — token source of truth (JS).
  * CSS mirrors these values in `src/styles/globals.css`.
  *
  * Inspiration: Apple · Linear · Arc · Notion · Things 3

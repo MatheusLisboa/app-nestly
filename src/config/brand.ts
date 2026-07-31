@@ -1,18 +1,18 @@
 /**
- * Centralized product branding for MyNinho.
+ * Centralized product branding for Nestly.
  * Change name, colors, assets and institutional copy here — never hardcode in features.
  */
 export const brand = {
-  name: "MyNinho",
-  legalName: "MyNinho",
-  tagline: "O ninho da sua família",
+  name: "Nestly",
+  legalName: "Nestly",
+  tagline: "Sua casa, no ninho certo",
   description:
     "Organize a rotina em casa com carinho: compras, bebê, contas, limpeza e o que importa no dia a dia.",
   url:
     process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.length > 0
       ? process.env.NEXT_PUBLIC_APP_URL
       : "http://localhost:3000",
-  supportEmail: "suporte@myninho.app",
+  supportEmail: "suporte@nestly.app",
   assets: {
     logo: "/brand/logo.svg",
     logoMark: "/brand/logo-mark.svg",
@@ -36,7 +36,7 @@ export const brand = {
     light: "#F3F6F4",
     dark: "#0F1412",
   },
-  designLanguage: "Ninho",
+  designLanguage: "Nest",
 } as const;
 
 export type Brand = typeof brand;

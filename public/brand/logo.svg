@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none" role="img" aria-label="MyNinho">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none" role="img" aria-label="Nestly">
   <defs>
     <linearGradient id="markBg" x1="6" y1="3" x2="42" y2="45" gradientUnits="userSpaceOnUse">
       <stop stop-color="#3A8A74"/>
@@ -15,5 +15,5 @@
   <ellipse cx="24" cy="22.2" rx="4.6" ry="5.5" fill="url(#egg)"/>
   <ellipse cx="22.4" cy="20.2" rx="1.5" ry="2" fill="#FFFFFF" fill-opacity="0.35"/>
   <circle cx="34.5" cy="13.5" r="1.6" fill="#D4846A"/>
-  <text x="60" y="31" fill="#1A221E" font-family="Nunito, ui-rounded, system-ui, sans-serif" font-size="24" font-weight="800" letter-spacing="-0.03em">MyNinho</text>
+  <text x="60" y="31" fill="#1A221E" font-family="Nunito, ui-rounded, system-ui, sans-serif" font-size="24" font-weight="800" letter-spacing="-0.03em">Nestly</text>
 </svg>

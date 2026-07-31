@@ -1,4 +1,4 @@
--- MyNinho — Calendar events + RLS (idempotent)
+-- Nestly — Calendar events + RLS (idempotent)
 
 create table if not exists public.calendar_events (
   id uuid primary key default gen_random_uuid() not null,

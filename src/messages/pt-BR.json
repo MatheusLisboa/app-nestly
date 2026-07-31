@@ -1,7 +1,7 @@
 {
   "brand": {
-    "name": "MyNinho",
-    "tagline": "O ninho da sua família",
+    "name": "Nestly",
+    "tagline": "Sua casa, no ninho certo",
     "description": "Organize a rotina em casa com carinho: compras, bebê, contas, limpeza e o que importa no dia a dia."
   },
   "common": {
@@ -82,7 +82,7 @@
     "subtitle": "Tudo o que importa na sua casa, em um só lugar.",
     "subtitleWithWorkspace": "Rotina de {workspace}, em um só lugar.",
     "emptyTitle": "Sua casa começa aqui",
-    "emptyDescription": "Os módulos de rotina chegarão em breve. A fundação do MyNinho já está pronta.",
+    "emptyDescription": "Os módulos de rotina chegarão em breve. A fundação do Nestly já está pronta.",
     "emptyDescriptionWithWorkspace": "{workspace} está pronta. Os próximos módulos da {workspaceLabel} chegam em breve."
   },
   "a11y": {

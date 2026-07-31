@@ -1,4 +1,4 @@
--- MyNinho — Cleaning tables + RLS
+-- Nestly — Cleaning tables + RLS
 -- Safe to run in Supabase SQL Editor (idempotent). Prefer over db:push.
 
 do $$ begin

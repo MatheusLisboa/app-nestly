@@ -1,4 +1,4 @@
--- MyNinho — Bills tables + RLS (idempotent)
+-- Nestly — Bills tables + RLS (idempotent)
 
 do $$ begin
   create type public.bill_recurrence as enum ('once', 'monthly', 'yearly');

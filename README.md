@@ -1,4 +1,4 @@
-# MyNinho
+# Nestly
 
 House OS SaaS — modular monolith (Feature First).
 
@@ -39,33 +39,13 @@ npm run dev
 | `npm run test:e2e` | Playwright |
 | `npm run db:generate` | Drizzle generate |
 | `npm run db:migrate` | Drizzle migrate |
-| `npm run db:studio` | Drizzle Studio |
+| `npm run db:push` | Drizzle push (dev) |
+| `npm run brand:assets` | Regenerate favicon / PWA / OG icons |
 
-## Architecture
+## Docs
 
-```
-src/
-  app/                 # routes only (composition)
-  features/            # Feature First modules
-  db/                  # Drizzle schema + RLS SQL
-  lib/                 # infra (supabase, offline, actions)
-  config/              # brand, env, app constants
-  messages/            # i18n (pt-BR)
-  styles/              # design tokens
-```
+- [Supabase setup](./docs/SUPABASE_SETUP.md)
 
-## Phase 1 + 2 — Auth, Workspace, Shopping, Inventory
+## License
 
-See **[docs/SUPABASE_SETUP.md](./docs/SUPABASE_SETUP.md)** for the full checklist.
-
-```bash
-cp .env.example .env.local
-# fill Supabase credentials
-npm run db:push
-# then run SQL files in src/db/rls/ (001 → 004) in the Supabase SQL editor
-npm run dev
-```
-
-Without Supabase credentials, the shell still loads for local UI work; auth stays disabled.
-
-Phase 0 delivers foundation. Phase 1 = Auth + Workspace. Phase 2 = Shopping + Inventory (offline adapters registered).
+Private — Nestly.

@@ -119,7 +119,7 @@ export interface OfflineBabyCareLog {
   updatedAt: string;
 }
 
-export class MyNinhoOfflineDb extends Dexie {
+export class NestlyOfflineDb extends Dexie {
   outbox!: EntityTable<OutboxItem, "id">;
   syncCursors!: EntityTable<SyncCursor, "id">;
   meta!: EntityTable<MetaKV, "key">;
@@ -132,7 +132,7 @@ export class MyNinhoOfflineDb extends Dexie {
   babyCareLogs!: EntityTable<OfflineBabyCareLog, "id">;
 
   constructor() {
-    super("myninho_offline");
+    super("nestly_offline");
 
     this.version(1).stores({
       outbox: "++id, workspaceId, feature, status, [workspaceId+feature], createdAt",
@@ -194,15 +194,15 @@ export class MyNinhoOfflineDb extends Dexie {
   }
 }
 
-let dbInstance: MyNinhoOfflineDb | null = null;
+let dbInstance: NestlyOfflineDb | null = null;
 
-export function getOfflineDb(): MyNinhoOfflineDb {
+export function getOfflineDb(): NestlyOfflineDb {
   if (typeof indexedDB === "undefined") {
     throw new Error("IndexedDB is not available in this environment.");
   }
 
   if (!dbInstance) {
-    dbInstance = new MyNinhoOfflineDb();
+    dbInstance = new NestlyOfflineDb();
   }
 
   return dbInstance;

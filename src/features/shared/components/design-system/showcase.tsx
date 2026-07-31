@@ -57,10 +57,10 @@ export function DesignSystemShowcase() {
   return (
     <div className="space-y-12 pb-24">
       <header className="space-y-3">
-        <Badge variant="accent">Linguagem Ninho</Badge>
+        <Badge variant="accent">Linguagem Nest</Badge>
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Design System</h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
-          Paleta de ninho: sage acolhedor, coral quente e tipografia Nunito — feita para a família,
+          Paleta Nestly: sage acolhedor, coral quente e tipografia Nunito — feita para a família,
           não para um dashboard frio.
         </p>
       </header>

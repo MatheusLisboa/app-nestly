@@ -1,4 +1,4 @@
--- MyNinho — Baby refine: pregnancy/born + prep lists (idempotent)
+-- Nestly — Baby refine: pregnancy/born + prep lists (idempotent)
 -- Run after 010_baby_rls.sql
 
 do $$ begin

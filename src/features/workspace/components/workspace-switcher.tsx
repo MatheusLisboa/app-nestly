@@ -14,12 +14,15 @@ import { cn } from "@/lib/utils";
 interface WorkspaceSwitcherProps {
   workspaces: WorkspaceSummary[];
   active: WorkspaceSummary | null;
+  /** Icon-letter trigger on narrow sidebar rails (md–lg). */
+  compact?: boolean;
 }
 
-export function WorkspaceSwitcher({ workspaces, active }: WorkspaceSwitcherProps) {
+export function WorkspaceSwitcher({ workspaces, active, compact }: WorkspaceSwitcherProps) {
   const t = useTranslations("workspace");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const initial = (active?.name ?? t("displayName")).trim().charAt(0).toUpperCase() || "F";
 
   function onSelect(workspaceId: string) {
     if (workspaceId === active?.id) return;
@@ -38,17 +41,45 @@ export function WorkspaceSwitcher({ workspaces, active }: WorkspaceSwitcherProps
         <Button
           type="button"
           variant="ghost"
-          className="h-auto w-full justify-between gap-2 px-2 py-2 text-left"
           disabled={pending}
           aria-label={t("switch")}
+          className={cn(
+            "h-auto text-left",
+            compact
+              ? "w-full justify-center px-0 py-1.5 lg:justify-between lg:gap-2 lg:px-2 lg:py-2"
+              : "w-full justify-between gap-2 px-2 py-2",
+          )}
         >
-          <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold tracking-tight">
-              {active?.name ?? t("displayName")}
-            </span>
-            <span className="block truncate text-xs text-muted-foreground">{t("switch")}</span>
-          </span>
-          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          {compact ? (
+            <>
+              <span
+                className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-sm font-bold text-primary lg:hidden"
+                aria-hidden
+              >
+                {initial}
+              </span>
+              <span className="hidden min-w-0 lg:block">
+                <span className="block truncate text-sm font-semibold tracking-tight">
+                  {active?.name ?? t("displayName")}
+                </span>
+                <span className="block truncate text-xs text-muted-foreground">{t("switch")}</span>
+              </span>
+              <ChevronsUpDown
+                className="hidden size-4 shrink-0 text-muted-foreground lg:block"
+                aria-hidden
+              />
+            </>
+          ) : (
+            <>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold tracking-tight">
+                  {active?.name ?? t("displayName")}
+                </span>
+                <span className="block truncate text-xs text-muted-foreground">{t("switch")}</span>
+              </span>
+              <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+            </>
+          )}
         </Button>
       </DropdownMenu.Trigger>
 

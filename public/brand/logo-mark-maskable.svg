@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="MyNinho">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Nestly">
   <defs>
     <linearGradient id="bg" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
       <stop stop-color="#3A8A74"/>
@@ -9,7 +9,6 @@
       <stop offset="1" stop-color="#D4A84B"/>
     </linearGradient>
   </defs>
-  <!-- full bleed for maskable safe zone -->
   <rect width="64" height="64" fill="url(#bg)"/>
   <circle cx="20" cy="18" r="14" fill="#FFFFFF" fill-opacity="0.08"/>
   <path d="M16 41c4-9.5 10-15 16-17 6 2 12 7.5 16 17-6 4-10 5.5-16 5.5S22 45 16 41Z" fill="#F4FBF7"/>

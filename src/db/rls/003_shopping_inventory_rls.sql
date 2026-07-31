@@ -1,4 +1,4 @@
--- MyNinho — domain RLS for shopping + inventory
+-- Nestly — domain RLS for shopping + inventory
 -- Run after tables exist (db:push or full bootstrap SQL).
 
 alter table public.shopping_lists enable row level security;

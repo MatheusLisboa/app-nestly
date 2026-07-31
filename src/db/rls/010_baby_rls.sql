@@ -1,4 +1,4 @@
--- MyNinho — Baby care tables + RLS (idempotent)
+-- Nestly — Baby care tables + RLS (idempotent)
 
 do $$ begin
   create type public.baby_care_type as enum ('feeding', 'diaper', 'sleep', 'note');

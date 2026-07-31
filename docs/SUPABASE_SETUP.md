@@ -1,4 +1,4 @@
-# Supabase setup — MyNinho (Auth + Workspace + core modules)
+# Supabase setup — Nestly (Auth + Workspace + core modules)
 
 ## 1. Create project
 

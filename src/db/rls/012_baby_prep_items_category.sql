@@ -1,4 +1,4 @@
--- MyNinho — expand prep categories + allow re-seed of suggestions
+-- Nestly — expand prep categories + allow re-seed of suggestions
 -- Run after 011_baby_refine.sql
 
 do $$ begin

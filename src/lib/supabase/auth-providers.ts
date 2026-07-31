@@ -1,5 +1,5 @@
 /**
- * Auth provider identifiers supported by MyNinho.
+ * Auth provider identifiers supported by Nestly.
  * Apple is reserved for a future release — keep the contract stable.
  */
 export const authProviders = ["google", "password", "apple"] as const;

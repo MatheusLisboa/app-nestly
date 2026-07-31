@@ -63,8 +63,8 @@ async function renderOg() {
   <path d="M155 340c22-55 55-85 90-95 35 10 68 40 90 95-35 22-58 32-90 32s-55-10-90-32Z" fill="#F4FBF7"/>
   <ellipse cx="245" cy="278" rx="28" ry="34" fill="url(#egg)"/>
   <circle cx="300" cy="220" r="10" fill="#D4846A"/>
-  <text x="400" y="290" fill="#1A221E" font-family="Nunito, ui-rounded, system-ui, sans-serif" font-size="92" font-weight="800" letter-spacing="-0.03em">MyNinho</text>
-  <text x="400" y="360" fill="#5C6B63" font-family="Nunito, ui-rounded, system-ui, sans-serif" font-size="36" font-weight="600">O ninho da sua família</text>
+  <text x="400" y="290" fill="#1A221E" font-family="Nunito, ui-rounded, system-ui, sans-serif" font-size="92" font-weight="800" letter-spacing="-0.03em">Nestly</text>
+  <text x="400" y="360" fill="#5C6B63" font-family="Nunito, ui-rounded, system-ui, sans-serif" font-size="36" font-weight="600">Sua casa, no ninho certo</text>
 </svg>`;
   const resvg = new Resvg(Buffer.from(svg), {
     fitTo: { mode: "width", value: 1200 },
