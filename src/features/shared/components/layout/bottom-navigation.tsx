@@ -1,8 +1,8 @@
 "use client";
 
 import { LayoutGrid, type LucideIcon } from "lucide-react";
-import Link from "next/link";
 import type { HTMLAttributes } from "react";
+import { SoftLink } from "@/features/shared/components/layout/soft-link";
 import { cn } from "@/lib/utils";
 import { Icon } from "../ui/icon";
 
@@ -38,26 +38,27 @@ export function BottomNavigation({ items, more, className, ...props }: BottomNav
       <ul className="mx-auto flex max-w-lg items-stretch">
         {items.map((item) => (
           <li key={item.href} className="flex-1">
-            <Link
+            <SoftLink
               href={item.disabled ? "#" : item.href}
               aria-disabled={item.disabled}
               aria-current={item.active ? "page" : undefined}
               className={cn(
-                "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-semibold tracking-tight transition-soft",
+                "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-semibold tracking-tight",
+                "transition-[color,transform,background-color] duration-150 ease-out",
                 item.active ? "text-primary" : "text-muted-foreground active:text-foreground",
                 item.disabled && "pointer-events-none opacity-40",
               )}
             >
               <span
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-xl transition-soft",
-                  item.active && "bg-primary-soft",
+                  "flex size-8 items-center justify-center rounded-xl transition-[background-color,transform] duration-150 ease-out",
+                  item.active && "scale-105 bg-primary-soft",
                 )}
               >
                 <Icon icon={item.icon} size="sm" />
               </span>
               <span className="max-w-full truncate">{item.label}</span>
-            </Link>
+            </SoftLink>
           </li>
         ))}
         {more ? (
@@ -67,14 +68,15 @@ export function BottomNavigation({ items, more, className, ...props }: BottomNav
               onClick={more.onClick}
               aria-current={more.active ? "page" : undefined}
               className={cn(
-                "flex min-h-12 w-full flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-semibold tracking-tight transition-soft",
+                "flex min-h-12 w-full flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-semibold tracking-tight",
+                "transition-[color,transform] duration-150 ease-out active:scale-[0.97]",
                 more.active ? "text-primary" : "text-muted-foreground active:text-foreground",
               )}
             >
               <span
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-xl transition-soft",
-                  more.active && "bg-primary-soft",
+                  "flex size-8 items-center justify-center rounded-xl transition-[background-color,transform] duration-150 ease-out",
+                  more.active && "scale-105 bg-primary-soft",
                 )}
               >
                 <Icon icon={LayoutGrid} size="sm" />

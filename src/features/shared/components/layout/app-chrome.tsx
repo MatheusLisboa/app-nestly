@@ -14,6 +14,7 @@ import {
   mobileNavKeys,
 } from "@/features/shared/components/layout/nav-config";
 import { Sidebar, SidebarNavItem } from "@/features/shared/components/layout/sidebar";
+import { SoftLink } from "@/features/shared/components/layout/soft-link";
 import { ThemeToggle } from "@/features/shared/components/layout/theme-toggle";
 import { Button } from "@/features/shared/components/ui/button";
 import {
@@ -82,11 +83,11 @@ export function AppSidebar() {
           }
 
           return (
-            <Link key={item.href} href={item.href} className="block" title={label}>
+            <SoftLink key={item.href} href={item.href} className="block" title={label}>
               <SidebarNavItem active={active} icon={<Glyph />} title={label}>
                 {label}
               </SidebarNavItem>
-            </Link>
+            </SoftLink>
           );
         })}
       </nav>

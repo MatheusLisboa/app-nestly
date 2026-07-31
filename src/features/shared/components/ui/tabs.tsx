@@ -25,9 +25,11 @@ export function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsP
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold tracking-tight transition-soft",
+        "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold tracking-tight",
+        "transition-[color,background-color,box-shadow,transform] duration-150 ease-out",
         "data-[state=active]:bg-surface-elevated data-[state=active]:text-foreground data-[state=active]:shadow-xs",
-        "hover:text-foreground disabled:pointer-events-none disabled:opacity-50",
+        "hover:text-foreground active:scale-[0.98]",
+        "disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       {...props}
@@ -35,10 +37,21 @@ export function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsP
   );
 }
 
-export function TabsContent({ className, ...props }: ComponentProps<typeof TabsPrimitive.Content>) {
+export function TabsContent({
+  className,
+  forceMount,
+  ...props
+}: ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
-      className={cn("mt-4 outline-none focus-visible:ring-0", className)}
+      forceMount={forceMount ?? true}
+      className={cn(
+        "mt-4 outline-none focus-visible:ring-0",
+        // Keep panels mounted for instant switches; hide inactive with CSS.
+        "data-[state=inactive]:pointer-events-none data-[state=inactive]:absolute data-[state=inactive]:invisible data-[state=inactive]:h-0 data-[state=inactive]:overflow-hidden data-[state=inactive]:opacity-0",
+        "data-[state=active]:relative data-[state=active]:animate-tab-in",
+        className,
+      )}
       {...props}
     />
   );

@@ -21,6 +21,9 @@
     "comingSoon": "Em breve",
     "commandPalette": "Buscar ou executar comando…"
   },
+  "pwa": {
+    "updating": "Atualizando o Nestly…"
+  },
   "workspace": {
     "displayName": "Família",
     "displayNamePlural": "Famílias",

@@ -283,6 +283,17 @@
   }
 }
 
+@keyframes tab-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -301,5 +312,9 @@
       box-shadow var(--duration-normal) var(--ease-soft),
       transform var(--duration-normal) var(--ease-soft),
       opacity var(--duration-fast) var(--ease-soft);
+  }
+
+  .animate-tab-in {
+    animation: tab-in 160ms var(--ease-soft) both;
   }
 }

@@ -1,7 +1,7 @@
+export { Logo } from "./components/brand/logo";
 export { EmptyState, EmptyStateAction } from "./components/feedback/empty-state";
 export { Loading, LoadingSpinner } from "./components/feedback/loading";
 export { Toaster, toast } from "./components/feedback/toast";
-export { Logo } from "./components/brand/logo";
 export { AppShell } from "./components/layout/app-shell";
 export { type BottomNavItem, BottomNavigation } from "./components/layout/bottom-navigation";
 export { FloatingActionButton } from "./components/layout/floating-action-button";
@@ -13,6 +13,7 @@ export {
   type NavItem,
 } from "./components/layout/nav-config";
 export { Sidebar, SidebarNavItem } from "./components/layout/sidebar";
+export { SoftLink } from "./components/layout/soft-link";
 export { ThemeToggle } from "./components/layout/theme-toggle";
 export { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
 export { Badge, badgeVariants } from "./components/ui/badge";

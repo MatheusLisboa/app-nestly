@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import { Baby, Backpack, Loader2, Moon, Pill, Plus, Shirt, Sparkles, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import {
   addBabyCareLogAction,
@@ -19,11 +19,11 @@ import {
   toggleBabyPrepItemAction,
 } from "@/features/baby/actions/baby-actions";
 import {
-  addBabyPrepItemSchema,
   addBabyCareLogSchema,
-  babyPrepCategories,
+  addBabyPrepItemSchema,
   type BabyCareType,
   type BabyPrepCategory,
+  babyPrepCategories,
   type CreateBabyInput,
   createBabySchema,
 } from "@/features/baby/schemas/baby";
@@ -159,7 +159,59 @@ export function BabyPanel({ baby, logs, summary, prep, canWrite }: BabyPanelProp
     );
   }
 
+  return (
+    <BabyReadyPanel
+      baby={baby}
+      logs={logs}
+      summary={summary}
+      prep={prep}
+      canWrite={canWrite}
+      pending={pending}
+      startTransition={startTransition}
+    />
+  );
+}
+
+function BabyReadyPanel({
+  baby,
+  logs,
+  summary,
+  prep,
+  canWrite,
+  pending,
+  startTransition,
+}: {
+  baby: BabyView;
+  logs: BabyCareLogView[];
+  summary: BabyCareSummary | null;
+  prep: BabyPrepProgress | null;
+  canWrite: boolean;
+  pending: boolean;
+  startTransition: (fn: () => void) => void;
+}) {
+  const t = useTranslations("baby");
+  const router = useRouter();
   const defaultTab = baby.status === "born" ? "care" : "enxoval";
+  const storageKey = `nestly:baby-tab:${baby.id}`;
+  const [tab, setTab] = useState(defaultTab);
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(storageKey);
+      if (stored) setTab(stored);
+    } catch {
+      // ignore
+    }
+  }, [storageKey]);
+
+  function onTabChange(next: string) {
+    setTab(next);
+    try {
+      sessionStorage.setItem(storageKey, next);
+    } catch {
+      // ignore
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -236,7 +288,7 @@ export function BabyPanel({ baby, logs, summary, prep, canWrite }: BabyPanelProp
         ) : null}
       </header>
 
-      <Tabs defaultValue={defaultTab}>
+      <Tabs value={tab} onValueChange={onTabChange}>
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
           {baby.status === "born" ? <TabsTrigger value="care">{t("tabs.care")}</TabsTrigger> : null}
           {babyPrepCategories.map((category) => (
